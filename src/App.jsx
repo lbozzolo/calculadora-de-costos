@@ -39,9 +39,9 @@ export default function App() {
   return (
     <div className="bg-gray-100 min-h-screen font-poppins flex items-center justify-center p-4">
       <div className="w-full max-w-5xl">
-        <div className="text-center mb-10">
+        {/* <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800">Calculadora de Costos</h1>
-        </div>
+        </div> */}
         <main className="w-full bg-white rounded-2xl shadow-lg p-6 md:p-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             <div className="space-y-6">
@@ -54,27 +54,27 @@ export default function App() {
                 <div className="flex justify-between text-xs text-slate-500 mt-1"><span>6 meses</span><span>60 meses</span></div>
               </div>
               <div>
-                <label htmlFor="rent" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Alquiler (J)</label>
+                <label htmlFor="rent" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Alquiler</label>
                 <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</span><input id="rent" type="number" value={rent} onChange={(e) => setRent(e.target.value)} placeholder="Ej: 250000" className="w-full pl-7 pr-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/></div>
               </div>
               <div>
-                <label htmlFor="expenses" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Mes de Expensas (F)</label>
+                <label htmlFor="expenses" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Mes de Expensas</label>
                 <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</span><input id="expenses" type="number" value={expenses} onChange={(e) => setExpenses(e.target.value)} placeholder="Ej: 50000" className="w-full pl-7 pr-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/></div>
               </div>
             </div>
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-slate-700 border-b pb-2">Resultados Estimados</h2>
               <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-500 text-white p-5 rounded-lg shadow-lg">
-                <div className="flex justify-between items-center"><h3 className="text-lg font-semibold">Costo Total</h3><InfoIcon className="text-white/70" /></div>
+                <div className="flex justify-between items-center"><h3 className="text-lg font-semibold">Total</h3><InfoIcon className="text-white/70" /></div>
                 <p className="text-4xl font-bold mt-1">{costs.total.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}</p>
-                <p className="text-xs text-white/80 mt-2 opacity-90">((Alquiler + Expensas) * Duración * 0.07)</p>
+                <p className="text-xs text-white/80 mt-2 opacity-90">Contrato de {duration} meses</p>
               </div>
               <div>
                 <h3 className="text-md font-semibold text-slate-600 mb-3">Opciones de Pago</h3>
                 <div className="space-y-3">
                   <ResultCard title="1 Pago al Contado" amount={costs.upfront} description="Incluye 20% de descuento." bgColor="bg-green-50" borderColor="border-green-200"/>
-                  <ResultCard title="3 Pagos" amount={costs.threePayments} description="Cuotas sin interés."/>
-                  <ResultCard title="6 Pagos" amount={costs.sixPayments} description="Cuotas con 40% de recargo total."/>
+                  <ResultCard title="3 Pagos de" amount={costs.threePayments} description="Cuotas sin interés."/>
+                  <ResultCard title="6 Pagos de" amount={costs.sixPayments} description="En efectivo o transferencia"/>
                 </div>
               </div>
             </div>
