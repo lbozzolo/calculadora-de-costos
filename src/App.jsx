@@ -42,7 +42,7 @@ export default function App() {
         {/* <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800">Calculadora de Costos</h1>
         </div> */}
-        <main className="w-full bg-white rounded-2xl shadow-lg p-6 md:p-10">
+        <main className="w-full bg-white rounded-2xl shadow-lg p-6 md:p-10 border border-slate-200">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-slate-700 border-b pb-2">Variables del Contrato</h2>
