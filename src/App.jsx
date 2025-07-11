@@ -39,6 +39,9 @@ export default function App() {
   return (
     <div className="bg-gray-100 min-h-screen font-poppins flex items-center justify-center p-4">
       <div className="w-full max-w-5xl">
+        <div className="text-center mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-800">Calculadora de Costos</h1>
+        </div>
         <main className="w-full bg-white rounded-2xl shadow-lg p-6 md:p-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             <div className="space-y-6">
