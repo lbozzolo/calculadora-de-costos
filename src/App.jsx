@@ -37,7 +37,7 @@ export default function App() {
   }, [duration, rent, expenses]);
 
   return (
-    <div className="bg-gray-100 min-h-screen font-poppins flex items-center justify-center p-4">
+    <div className="min-h-screen font-poppins flex items-center justify-center p-4">
       <div className="w-full max-w-5xl">
         {/* <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800">Calculadora de Costos</h1>
