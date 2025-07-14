@@ -78,7 +78,7 @@ export default function App() {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-slate-700 border-b pb-2">Opciones de Pago</h2>
               <div className="space-y-3">
-                <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-500 text-white p-6 rounded-lg shadow-lg border border-indigo-700">
+                <div className="bg-gradient-to-br from-[#352884] to-[#40E7DF] text-white p-6 rounded-lg shadow-lg border border-[#352884]">
                   <div className="flex justify-between items-center">
                     <h3 className="text-xl md:text-2xl font-bold">1 Pago al Contado</h3>
                   </div>
