@@ -39,12 +39,12 @@ export default function App() {
   }, [duration, rent, expenses]);
 
   return (
-    <div className="min-h-screen font-poppins flex items-center justify-center p-4">
+    <div className="min-h-screen font-poppins flex items-center justify-center p-2">
       <div className="w-full max-w-5xl">
         {/* <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800">Calculadora de Costos</h1>
         </div> */}
-        <main className="w-full bg-white rounded-2xl shadow-lg p-6 md:p-10 border border-slate-200">
+        <main className="w-full bg-white rounded-2xl shadow-lg p-3 md:p-5 border border-slate-200">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Columna izquierda: Variables del contrato + Total */}
             <div className="space-y-6">
