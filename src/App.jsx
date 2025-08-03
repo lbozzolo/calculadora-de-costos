@@ -69,8 +69,8 @@ export default function App() {
   }, [costs]); // Se ejecuta de nuevo si los costos cambian y pueden afectar la altura
 
   return (
-    <div className="min-h-screen font-poppins flex items-center justify-center p-2">
-      <div className="w-full max-w-5xl">
+    <div ref={appRef} className="font-poppins p-2">
+      <div className="w-full max-w-5xl mx-auto">
         {/* <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800">Calculadora de Costos</h1>
         </div> */}
