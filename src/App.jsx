@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 
 // Componente para un ícono de información
 const InfoIcon = ({ className = 'text-gray-400' }) => (
@@ -22,8 +22,10 @@ const ResultCard = ({ title, amount, description, bgColor = 'bg-slate-50', borde
 // Componente principal de la aplicación
 export default function App() {
   const [duration, setDuration] = useState(24);
-  const [rent, setRent] = useState(250000);
-  const [expenses, setExpenses] = useState(50000);
+  const [rent, setRent] = useState(0);
+  const [expenses, setExpenses] = useState(0);
+
+  const appRef = useRef(null);
 
   const costs = useMemo(() => {
     const numRent = parseFloat(rent) || 0;
@@ -38,6 +40,34 @@ export default function App() {
     return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, advance30, threePayments2333 };
   }, [duration, rent, expenses]);
 
+  useEffect(() => {
+    // Esta función envía la altura al documento padre (WordPress)
+    const sendHeight = () => {
+      if (appRef.current) {
+        const height = appRef.current.scrollHeight;
+        // El '*' debería ser reemplazado por el dominio de tu sitio de WordPress por seguridad
+        // ej: 'https://misitiowordpress.com'
+        window.parent.postMessage({ frameHeight: height }, '*');
+      }
+    };
+
+    // Usamos ResizeObserver para detectar cambios de tamaño en el contenido
+    const resizeObserver = new ResizeObserver(sendHeight);
+    if (appRef.current) {
+      resizeObserver.observe(appRef.current);
+    }
+
+    // Envía la altura inicial
+    sendHeight();
+
+    // Limpieza al desmontar el componente
+    return () => {
+      if(appRef.current) {
+        resizeObserver.unobserve(appRef.current);
+      }
+    };
+  }, [costs]); // Se ejecuta de nuevo si los costos cambian y pueden afectar la altura
+
   return (
     <div className="min-h-screen font-poppins flex items-center justify-center p-2">
       <div className="w-full max-w-5xl">
@@ -50,11 +80,24 @@ export default function App() {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-slate-700 border-b pb-2">Variables del Contrato</h2>
               <div>
-                <label htmlFor="duration" className="block text-sm font-medium text-slate-600 mb-2">
-                  Duración del Contrato: <span className="font-bold text-indigo-600">{duration} meses</span>
+                <label htmlFor="duration" className="block text-sm font-medium text-slate-600 mb-1">
+                  Duración del Contrato (en meses)
                 </label>
-                <input id="duration" type="range" min="6" max="60" value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"/>
-                <div className="flex justify-between text-xs text-slate-500 mt-1"><span>6 meses</span><span>60 meses</span></div>
+                <div className="relative">
+                  <input
+                    id="duration"
+                    type="number"
+                    min="6"
+                    max="60"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    placeholder="Ej: 24"
+                    className="w-full pl-4 pr-20 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500">
+                    meses
+                  </span>
+                </div>
               </div>
               <div>
                 <label htmlFor="rent" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Alquiler</label>
@@ -94,8 +137,13 @@ export default function App() {
                 </div>
                 <ResultCard
                   title="6 Pagos de"
-                  amount={(costs.total * 1.40) / 6}
-                  description="En efectivo o transferencia"
+                  amount={(costs.total * 1.12) / 6}
+                  description="Con 12% de interés"
+                />
+                <ResultCard
+                  title="12 Pagos de"
+                  amount={(costs.total * 1.216) / 12}
+                  description="Con 21,60% de interés"
                 />
                 {/*
                 <ResultCard
