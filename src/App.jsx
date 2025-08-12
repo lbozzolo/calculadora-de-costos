@@ -37,7 +37,9 @@ export default function App() {
     // Nueva forma: 1 adelanto del 30% y 3 cuotas sin interés del 23.33% cada una
     const advance30 = totalCost * 0.30;
     const threePayments2333 = (totalCost * 0.70) / 3;
-    return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, advance30, threePayments2333 };
+    const sixPaymentsValue = (totalCost * 1.138) / 6; // 13.8% de interés
+    const twelvePaymentsValue = (totalCost * 1.262) / 12; // 26.2% de interés
+    return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, advance30, threePayments2333, sixPaymentsValue, twelvePaymentsValue };
   }, [duration, rent, expenses]);
 
   useEffect(() => {
@@ -116,6 +118,10 @@ export default function App() {
                 <p className="text-2xl font-bold mt-1">{costs.total.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}</p>
                 <p className="text-xs text-slate-500 mt-2 opacity-90">Contrato de {duration} meses</p>
               </div>
+              {/* Logo debajo del total */}
+              <div className="flex justify-center mt-4">
+                <img src="/logo_mercado_pago.webp" alt="Logo Mercado Pago" className="h-16 w-auto" />
+              </div>
             </div>
             {/* Columna derecha: Opciones de pago */}
             <div className="space-y-6">
@@ -137,13 +143,13 @@ export default function App() {
                 </div>
                 <ResultCard
                   title="6 Pagos de"
-                  amount={(costs.total * 1.12) / 6}
-                  description="Con 12% de interés"
+                  amount={costs.sixPaymentsValue}
+                  description="Con 13.8% de interés"
                 />
                 <ResultCard
                   title="12 Pagos de"
-                  amount={(costs.total * 1.216) / 12}
-                  description="Con 21,60% de interés"
+                  amount={costs.twelvePaymentsValue}
+                  description="Con 26.2% de interés"
                 />
                 {/*
                 <ResultCard
