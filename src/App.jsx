@@ -33,12 +33,12 @@ export default function App() {
     const numDuration = parseInt(duration, 10) || 0;
     const totalCost = (numRent + numExpenses) * numDuration * 0.07;
     const upfrontPayment = totalCost * 0.80;
-    const threePaymentsValue = totalCost / 3;
+    const threePaymentsValue = (totalCost * 1.076) / 3; // 7.6% de interés
     // Nueva forma: 1 adelanto del 30% y 3 cuotas sin interés del 23.33% cada una
     const advance30 = totalCost * 0.30;
     const threePayments2333 = (totalCost * 0.70) / 3;
-    const sixPaymentsValue = (totalCost * 1.138) / 6; // 13.8% de interés
-    const twelvePaymentsValue = (totalCost * 1.262) / 12; // 26.2% de interés
+    const sixPaymentsValue = (totalCost * 1.135) / 6; // 13.5% de interés
+    const twelvePaymentsValue = (totalCost * 1.255) / 12; // 25.5% de interés
     return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, advance30, threePayments2333, sixPaymentsValue, twelvePaymentsValue };
   }, [duration, rent, expenses]);
 
@@ -139,17 +139,17 @@ export default function App() {
                     <h3 className="text-sm font-semibold">3 Pagos de</h3>
                   </div>
                   <p className="text-2xl font-bold mt-1">{costs.threePayments.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}</p>
-                  <p className="text-xs text-green-700 mt-2">Cuotas sin interés.</p>
+                  <p className="text-xs text-green-700 mt-2">Con 7,6% de interés.</p>
                 </div>
                 <ResultCard
                   title="6 Pagos de"
                   amount={costs.sixPaymentsValue}
-                  description="Con 13.8% de interés"
+                  description="Con 13,5% de interés"
                 />
                 <ResultCard
                   title="12 Pagos de"
                   amount={costs.twelvePaymentsValue}
-                  description="Con 26.2% de interés"
+                  description="Con 25,5% de interés"
                 />
                 {/*
                 <ResultCard
