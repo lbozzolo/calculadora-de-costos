@@ -37,8 +37,8 @@ export default function App() {
     // Nueva forma: 1 adelanto del 30% y 3 cuotas sin interés del 23.33% cada una
     const advance30 = totalCost * 0.30;
     const threePayments2333 = (totalCost * 0.70) / 3;
-  const sixPaymentsValue = (totalCost * 1.178) / 6; // 17.8% de interés
-  const twelvePaymentsValue = (totalCost * 1.318) / 12; // 31.8% de interés
+    const sixPaymentsValue = (totalCost * 1.138) / 6; // 13.8% de interés
+    const twelvePaymentsValue = (totalCost * 1.262) / 12; // 26.2% de interés
     return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, advance30, threePayments2333, sixPaymentsValue, twelvePaymentsValue };
   }, [duration, rent, expenses]);
 
@@ -144,12 +144,12 @@ export default function App() {
                 <ResultCard
                   title="6 Pagos de"
                   amount={costs.sixPaymentsValue}
-                  description="Con 17,8% de interés"
+                  description="Con 13.8% de interés"
                 />
                 <ResultCard
                   title="12 Pagos de"
                   amount={costs.twelvePaymentsValue}
-                  description="Con 31,8% de interés"
+                  description="Con 26.2% de interés"
                 />
                 {/*
                 <ResultCard
