@@ -143,17 +143,17 @@ export default function App() {
                     <h3 className="text-sm font-semibold">3 Pagos de</h3>
                   </div>
                   <p className="text-2xl font-bold mt-1">{costs.threePayments.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}</p>
-                  <p className="text-xs text-green-700 mt-2">Con 7,6% de interés.</p>
+                  <p className="text-xs text-green-700 mt-2">Con {(Math.round((INTEREST_RATES.three - 1) * 1000) / 10).toLocaleString('es-AR')}% de interés.</p>
                 </div>
                 <ResultCard
                   title="6 Pagos de"
                   amount={costs.sixPaymentsValue}
-                  description="Con 13,5% de interés"
+                  description={`Con ${(Math.round((INTEREST_RATES.six - 1) * 1000) / 10).toLocaleString('es-AR')}% de interés`}
                 />
                 <ResultCard
                   title="12 Pagos de"
                   amount={costs.twelvePaymentsValue}
-                  description="Con 25,5% de interés"
+                  description={`Con ${(Math.round((INTEREST_RATES.twelve - 1) * 1000) / 10).toLocaleString('es-AR')}% de interés`}
                 />
                 {/*
                 <ResultCard
