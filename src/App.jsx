@@ -19,6 +19,13 @@ const ResultCard = ({ title, amount, description, bgColor = 'bg-slate-50', borde
   </div>
 );
 
+// Configuración de tasas de interés desde variables de entorno
+const INTEREST_RATES = {
+  three: parseFloat(import.meta.env.VITE_RATE_THREE) || 1.076,
+  six: parseFloat(import.meta.env.VITE_RATE_SIX) || 1.135,
+  twelve: parseFloat(import.meta.env.VITE_RATE_TWELVE) || 1.255,
+};
+
 // Componente principal de la aplicación
 export default function App() {
   const [duration, setDuration] = useState(24);
@@ -33,13 +40,10 @@ export default function App() {
     const numDuration = parseInt(duration, 10) || 0;
     const totalCost = (numRent + numExpenses) * numDuration * 0.07;
     const upfrontPayment = totalCost * 0.80;
-    const threePaymentsValue = (totalCost * 1.076) / 3; // 7.6% de interés
-    // Nueva forma: 1 adelanto del 30% y 3 cuotas sin interés del 23.33% cada una
-    const advance30 = totalCost * 0.30;
-    const threePayments2333 = (totalCost * 0.70) / 3;
-    const sixPaymentsValue = (totalCost * 1.135) / 6; // 13.5% de interés
-    const twelvePaymentsValue = (totalCost * 1.255) / 12; // 25.5% de interés
-    return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, advance30, threePayments2333, sixPaymentsValue, twelvePaymentsValue };
+    const threePaymentsValue = (totalCost * INTEREST_RATES.three) / 3; // 3 cuotas
+    const sixPaymentsValue = (totalCost * INTEREST_RATES.six) / 6; // 6 cuotas
+    const twelvePaymentsValue = (totalCost * INTEREST_RATES.twelve) / 12; // 12 cuotas
+    return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, sixPaymentsValue, twelvePaymentsValue };
   }, [duration, rent, expenses]);
 
   useEffect(() => {
@@ -49,7 +53,7 @@ export default function App() {
         const height = appRef.current.scrollHeight;
         // El '*' debería ser reemplazado por el dominio de tu sitio de WordPress por seguridad
         // ej: 'https://misitiowordpress.com'
-        window.parent.postMessage({ frameHeight: height }, '*');
+        window.parent.postMessage({ frameHeight: height }, 'https://mialquilergarantias.com.ar');
       }
     };
 
