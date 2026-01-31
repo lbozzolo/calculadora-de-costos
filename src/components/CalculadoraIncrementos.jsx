@@ -1,4 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import { es } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+
+// Registrar locale español
+registerLocale('es', es);
 
 // Índices disponibles del INDEC
 const INDICES_DISPONIBLES = [
@@ -9,7 +15,7 @@ const INDICES_DISPONIBLES = [
 
 export default function CalculadoraIncrementos() {
   const [valorInicial, setValorInicial] = useState('');
-  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaInicio, setFechaInicio] = useState(new Date());
   const [mesesActualizacion, setMesesActualizacion] = useState(3);
   const [indiceSeleccionado, setIndiceSeleccionado] = useState('IPC');
   const [datosIndice, setDatosIndice] = useState([]);
@@ -67,7 +73,7 @@ export default function CalculadoraIncrementos() {
       return [];
     }
 
-    const fecha = new Date(fechaInicio + 'T00:00:00');
+    const fecha = new Date(fechaInicio);
     if (isNaN(fecha.getTime())) {
       return [];
     }
@@ -205,9 +211,32 @@ export default function CalculadoraIncrementos() {
   }, [valorInicial, fechaInicio, mesesActualizacion, datosIndice]);
 
   return (
-    <div className="space-y-6">
-      {/* Formulario de entrada */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-8">
+      {/* Leyenda explicativa */}
+      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <p className="text-slate-700 text-sm">
+            <span className="font-medium">Calculá cómo se actualiza tu alquiler según el índice que elijas.</span>
+            {' '}Ingresá el valor inicial, la fecha de inicio del contrato y cada cuántos meses se actualiza.
+          </p>
+          <div className="relative group flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="text-slate-400 hover:text-slate-600 cursor-help" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+            </svg>
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-64 z-10 shadow-lg">
+              <p className="mb-1">📊 Los datos se obtienen en tiempo real del INDEC.</p>
+              <p>📅 El cálculo considera el desfase de un mes en la publicación de los índices oficiales.</p>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sección de formulario de entrada */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold text-slate-700 border-b pb-2">Variables del Contrato</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="valorInicial" className="block text-sm font-medium text-slate-600 mb-1">
             Valor Inicial del Alquiler
@@ -229,54 +258,73 @@ export default function CalculadoraIncrementos() {
           <label htmlFor="fechaInicio" className="block text-sm font-medium text-slate-600 mb-1">
             Fecha de Inicio del Contrato
           </label>
-          <input
+          <DatePicker
             id="fechaInicio"
-            type="date"
-            value={fechaInicio}
-            onChange={(e) => setFechaInicio(e.target.value)}
+            selected={fechaInicio}
+            onChange={(date) => setFechaInicio(date)}
+            dateFormat="dd/MM/yyyy"
+            locale="es"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
             className="w-full px-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            wrapperClassName="w-full"
           />
         </div>
 
-        <div>
-          <label htmlFor="mesesActualizacion" className="block text-sm font-medium text-slate-600 mb-1">
-            Cada Cuántos Meses Actualiza
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-slate-600 mb-2">
+            ¿Cada cuántos meses actualiza el contrato?
           </label>
-          <div className="relative">
-            <input
-              id="mesesActualizacion"
-              type="number"
-              min="1"
-              max="12"
-              value={mesesActualizacion}
-              onChange={(e) => setMesesActualizacion(e.target.value)}
-              placeholder="Ej: 3"
-              className="w-full pl-4 pr-20 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            />
-            <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500">
-              meses
-            </span>
+          <div className="flex flex-wrap gap-2">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((mes) => (
+              <button
+                key={mes}
+                type="button"
+                onClick={() => setMesesActualizacion(mes)}
+                className={`min-w-[42px] px-3 py-2 rounded-md border text-sm font-medium transition-all shadow-sm ${
+                  mesesActualizacion === mes
+                    ? 'bg-slate-700 border-slate-700 text-white'
+                    : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50'
+                }`}
+              >
+                {mes}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div>
-          <label htmlFor="indice" className="block text-sm font-medium text-slate-600 mb-1">
-            Índice de Actualización
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-slate-600 mb-2">
+            Índice de actualización
           </label>
-          <select
-            id="indice"
-            value={indiceSeleccionado}
-            onChange={(e) => setIndiceSeleccionado(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            {INDICES_DISPONIBLES.map(indice => (
-              <option key={indice.id} value={indice.id}>
-                {indice.name}
-              </option>
+          <div className="flex flex-wrap gap-2">
+            {INDICES_DISPONIBLES.map((indice) => (
+              <button
+                key={indice.id}
+                type="button"
+                onClick={() => setIndiceSeleccionado(indice.id)}
+                className={`px-4 py-2 rounded-md border text-sm font-medium transition-all shadow-sm ${
+                  indiceSeleccionado === indice.id
+                    ? 'bg-slate-700 border-slate-700 text-white'
+                    : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50'
+                }`}
+              >
+                {indice.id}
+              </button>
             ))}
-          </select>
+          </div>
+          <p className="text-xs text-slate-500 mt-2">
+            {INDICES_DISPONIBLES.find(i => i.id === indiceSeleccionado)?.name}
+          </p>
+        </div>
         </div>
       </div>
+
+      {/* Sección de resultados - solo visible cuando hay datos o está cargando */}
+      {(cargando || incrementos.length > 0) && (
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold text-slate-700 border-b pb-2">Incrementos Calculados</h2>
 
       {/* Estado de carga */}
       {cargando && (
@@ -420,6 +468,8 @@ export default function CalculadoraIncrementos() {
         <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md">
           <p className="text-sm">Complete todos los campos para calcular los incrementos de alquiler.</p>
         </div>
+      )}
+      </div>
       )}
     </div>
   );
