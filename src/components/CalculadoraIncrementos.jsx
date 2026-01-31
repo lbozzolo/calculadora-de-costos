@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 const INDICES_DISPONIBLES = [
   { id: 'IPC', name: 'IPC (Índice de Precios al Consumidor)', serieId: '148.3_INIVELNAL_DICI_M_26' },
   { id: 'ICC', name: 'ICC (Índice del Costo de la Construcción)', serieId: '380.3_ICC_NACIONNAL_0_T_12' },
+  { id: 'RIPTE', name: 'RIPTE (Índice de Salarios)', serieId: '158.1_REPTE_0_0_5' },
 ];
 
 export default function CalculadoraIncrementos() {
@@ -166,12 +167,15 @@ export default function CalculadoraIncrementos() {
           const datoMes = datosPeriodo[j];
           const fechaOriginal = new Date(datoMes.fecha);
           
+          // Label: mostrar el mes siguiente al dato real
+          const mesParaLabel = new Date(fechaOriginal.getFullYear(), fechaOriginal.getMonth() + 1, 1);
+          
           const variacionMes = ((datoMes.valor - indiceAnteriorMes.valor) / indiceAnteriorMes.valor) * 100;
           const variacionAcumulada = ((datoMes.valor - baseAcumulado.valor) / baseAcumulado.valor) * 100;
           
           desgloseMensual.push({
             fecha: fechaOriginal,
-            mesDisplay: fechaOriginal,
+            mesDisplay: mesParaLabel,
             valorIndice: datoMes.valor,
             variacionMes: variacionMes,
             variacionAcumulada: variacionAcumulada
