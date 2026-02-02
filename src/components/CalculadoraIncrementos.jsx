@@ -207,6 +207,80 @@ export default function CalculadoraIncrementos() {
       }
     }
 
+    // Agregar período estimado (próximo período usando el último valor de inflación)
+    if (resultados.length > 1 && indicePrevioParaDesglose) {
+      const ultimoPeriodo = resultados[resultados.length - 1];
+      const ultimoIndiceMensual = indicePrevioParaDesglose;
+      
+      // Calcular la variación mensual promedio del último dato disponible
+      // Buscar el dato anterior al último para calcular la variación mensual
+      const datosOrdenados = [...datosIndice].sort((a, b) => 
+        new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+      );
+      
+      const indexUltimo = datosOrdenados.findIndex(d => d.fecha === ultimoIndiceMensual.fecha);
+      const datoPrevio = indexUltimo > 0 ? datosOrdenados[indexUltimo - 1] : null;
+      
+      const variacionMensualUltima = datoPrevio 
+        ? ((ultimoIndiceMensual.valor - datoPrevio.valor) / datoPrevio.valor) * 100
+        : 2.5; // Default conservador si no hay dato previo
+      
+      // Calcular fecha del próximo período estimado
+      const fechaProximoPeriodo = new Date(ultimoPeriodo.fecha);
+      fechaProximoPeriodo.setMonth(fechaProximoPeriodo.getMonth() + mesesIncremento);
+      
+      // Simular el incremento acumulado replicando la variación mensual
+      const variacionEstimadaPeriodo = (Math.pow(1 + (variacionMensualUltima / 100), mesesIncremento) - 1) * 100;
+      
+      // Calcular monto estimado desde el valor inicial
+      const indiceEstimado = ultimoIndiceMensual.valor * (1 + (variacionEstimadaPeriodo / 100));
+      const variacionDesdeInicioEstimada = ((indiceEstimado - indiceInicial.valor) / indiceInicial.valor);
+      const montoEstimado = montoInicial * (1 + variacionDesdeInicioEstimada);
+      
+      // Generar desglose mensual estimado
+      const desgloseMensualEstimado = [];
+      let indiceAcumuladoEstimado = ultimoIndiceMensual.valor;
+      
+      // Calcular la fecha base: primer día del mes siguiente al último dato real
+      const fechaBaseEstimado = new Date(ultimoIndiceMensual.fecha);
+      fechaBaseEstimado.setMonth(fechaBaseEstimado.getMonth() + 1);
+      fechaBaseEstimado.setDate(1); // Asegurar que es día 1
+      
+      for (let m = 0; m < mesesIncremento; m++) {
+        // Crear fecha para cada mes del período estimado
+        const fechaMesEstimado = new Date(fechaBaseEstimado);
+        fechaMesEstimado.setMonth(fechaBaseEstimado.getMonth() + m);
+        
+        // Para estimados, mantener la consistencia con los datos reales (+1 mes en el label)
+        const mesParaLabel = new Date(fechaMesEstimado.getFullYear(), fechaMesEstimado.getMonth() + 1, 1);
+        
+        // Aplicar la variación mensual
+        const nuevoIndice = indiceAcumuladoEstimado * (1 + (variacionMensualUltima / 100));
+        const variacionAcumuladaEstimada = ((nuevoIndice - ultimoIndiceMensual.valor) / ultimoIndiceMensual.valor) * 100;
+        
+        desgloseMensualEstimado.push({
+          fecha: fechaMesEstimado,
+          mesDisplay: mesParaLabel,
+          valorIndice: nuevoIndice,
+          variacionMes: variacionMensualUltima,
+          variacionAcumulada: variacionAcumuladaEstimada,
+          estimado: true
+        });
+        
+        indiceAcumuladoEstimado = nuevoIndice;
+      }
+      
+      resultados.push({
+        periodo: resultados.length + 1,
+        fecha: fechaProximoPeriodo,
+        monto: montoEstimado,
+        incremento: variacionEstimadaPeriodo,
+        indice: indiceEstimado,
+        desglose: desgloseMensualEstimado,
+        estimado: true
+      });
+    }
+
     return resultados;
   }, [valorInicial, fechaInicio, mesesActualizacion, datosIndice]);
 
@@ -368,9 +442,16 @@ export default function CalculadoraIncrementos() {
             <tbody className="bg-white divide-y divide-slate-200">
               {incrementos.map((inc, index) => (
                 <React.Fragment key={index}>
-                  <tr className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                  <tr className={inc.estimado ? 'bg-amber-50 border-l-4 border-l-amber-400' : (index % 2 === 0 ? 'bg-white' : 'bg-slate-50')}>
                     <td className="px-4 py-3 text-sm text-slate-700">
-                      {inc.periodo === 0 ? 'Inicial' : `Período ${inc.periodo}`}
+                      {inc.periodo === 0 ? 'Inicial' : (
+                        inc.estimado ? (
+                          <span className="flex items-center gap-1">
+                            <span>Período {inc.periodo}</span>
+                            <span className="text-xs text-amber-600 font-medium">(Estimado)</span>
+                          </span>
+                        ) : `Período ${inc.periodo}`
+                      )}
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-700">
                       {inc.fecha.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
@@ -382,7 +463,7 @@ export default function CalculadoraIncrementos() {
                       {inc.periodo === 0 ? (
                         <span className="text-slate-500">-</span>
                       ) : (
-                        <span className={inc.incremento > 0 ? 'text-green-600 font-semibold' : 'text-slate-600'}>
+                        <span className={inc.estimado ? 'text-amber-600 font-semibold' : (inc.incremento > 0 ? 'text-green-600 font-semibold' : 'text-slate-600')}>
                           +{inc.incremento.toFixed(2)}%
                         </span>
                       )}
@@ -431,20 +512,21 @@ export default function CalculadoraIncrementos() {
                             </thead>
                             <tbody className="bg-white divide-y divide-slate-200">
                               {inc.desglose.map((mes, mesIndex) => (
-                                <tr key={mesIndex} className={mesIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                <tr key={mesIndex} className={mes.estimado ? 'bg-amber-50' : (mesIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50')}>
                                   <td className="px-3 py-2 text-sm text-slate-700 capitalize">
                                     {mes.mesDisplay.toLocaleDateString('es-AR', { year: 'numeric', month: 'long' })}
+                                    {mes.estimado && <span className="ml-1 text-xs text-amber-600">*</span>}
                                   </td>
                                   <td className="px-3 py-2 text-sm text-slate-900 text-right">
                                     {mes.valorIndice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
                                   </td>
                                   <td className="px-3 py-2 text-sm text-right">
-                                    <span className={mes.variacionMes > 0 ? 'text-green-600' : 'text-slate-600'}>
+                                    <span className={mes.estimado ? 'text-amber-600' : (mes.variacionMes > 0 ? 'text-green-600' : 'text-slate-600')}>
                                       {mes.variacionMes.toFixed(2)}%
                                     </span>
                                   </td>
                                   <td className="px-3 py-2 text-sm text-right">
-                                    <span className={mes.variacionAcumulada > 0 ? 'text-green-600 font-semibold' : 'text-slate-600'}>
+                                    <span className={mes.estimado ? 'text-amber-600 font-semibold' : (mes.variacionAcumulada > 0 ? 'text-green-600 font-semibold' : 'text-slate-600')}>
                                       {mes.variacionAcumulada.toFixed(2)}%
                                     </span>
                                   </td>
@@ -460,6 +542,22 @@ export default function CalculadoraIncrementos() {
               ))}
             </tbody>
           </table>
+
+          {/* Leyenda para período estimado */}
+          {incrementos.some(inc => inc.estimado) && (
+            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="text-amber-600 flex-shrink-0 mt-0.5" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+                <div className="text-sm text-amber-800">
+                  <p className="font-medium mb-1">Sobre el período estimado</p>
+                  <p>El último período mostrado es una <strong>estimación</strong> basada en replicar la variación mensual más reciente ({incrementos.find(inc => inc.estimado)?.desglose?.[0]?.variacionMes.toFixed(2)}%) durante los próximos {mesesActualizacion} meses. Esta proyección asume que la inflación se mantendrá constante, por lo que debe tomarse solo como referencia.</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
