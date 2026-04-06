@@ -46,11 +46,11 @@ const INTEREST_RATES = {
 export default function CalculadoraGarantia() {
   const [duration, setDuration] = useState(24);
   const [rent, setRent] = useState('');
-  const [expenses, setExpenses] = useState(0);
+  const [expenses, setExpenses] = useState('');
 
   const costs = useMemo(() => {
     const numRent = parseArgentineNumber(rent);
-    const numExpenses = parseFloat(expenses) || 0;
+    const numExpenses = parseArgentineNumber(expenses);
     const numDuration = parseInt(duration, 10) || 0;
     const totalCost = (numRent + numExpenses) * numDuration * 0.07;
     const upfrontPayment = totalCost * 0.80;
@@ -91,7 +91,7 @@ export default function CalculadoraGarantia() {
         </div>
         <div>
           <label htmlFor="expenses" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Mes de Expensas</label>
-          <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</span><input id="expenses" type="number" value={expenses} onChange={(e) => setExpenses(e.target.value)} placeholder="Ej: 50000" className="w-full pl-7 pr-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/></div>
+          <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</span><input id="expenses" type="text" inputMode="decimal" value={expenses} onChange={(e) => setExpenses(formatArgentineNumber(e.target.value))} placeholder="Ej: 50.000" className="w-full pl-7 pr-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/></div>
         </div>
         {/* Total debajo de las variables */}
         <div className="bg-slate-50 border border-slate-200 text-slate-800 p-4 rounded-lg shadow-sm">
