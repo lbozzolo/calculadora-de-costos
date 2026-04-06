@@ -19,6 +19,23 @@ const ResultCard = ({ title, amount, description, bgColor = 'bg-slate-50', borde
   </div>
 );
 
+// Helpers de formato numérico argentino (1.250.000,50)
+const formatArgentineNumber = (value) => {
+  const cleaned = value.replace(/[^\d,]/g, '');
+  const commaIndex = cleaned.indexOf(',');
+  if (commaIndex === -1) {
+    return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  const intPart = cleaned.substring(0, commaIndex);
+  const decPart = cleaned.substring(commaIndex + 1).replace(/,/g, '');
+  return `${intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${decPart}`;
+};
+
+const parseArgentineNumber = (value) => {
+  if (!value) return 0;
+  return parseFloat(value.toString().replace(/\./g, '').replace(',', '.')) || 0;
+};
+
 // Configuración de tasas de interés desde variables de entorno
 const INTEREST_RATES = {
   three: parseFloat(import.meta.env.VITE_RATE_THREE) || 1.076,
@@ -28,11 +45,11 @@ const INTEREST_RATES = {
 
 export default function CalculadoraGarantia() {
   const [duration, setDuration] = useState(24);
-  const [rent, setRent] = useState(0);
+  const [rent, setRent] = useState('');
   const [expenses, setExpenses] = useState(0);
 
   const costs = useMemo(() => {
-    const numRent = parseFloat(rent) || 0;
+    const numRent = parseArgentineNumber(rent);
     const numExpenses = parseFloat(expenses) || 0;
     const numDuration = parseInt(duration, 10) || 0;
     const totalCost = (numRent + numExpenses) * numDuration * 0.07;
@@ -70,7 +87,7 @@ export default function CalculadoraGarantia() {
         </div>
         <div>
           <label htmlFor="rent" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Alquiler</label>
-          <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</span><input id="rent" type="number" value={rent} onChange={(e) => setRent(e.target.value)} placeholder="Ej: 250000" className="w-full pl-7 pr-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/></div>
+          <div className="relative"><span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</span><input id="rent" type="text" inputMode="decimal" value={rent} onChange={(e) => setRent(formatArgentineNumber(e.target.value))} placeholder="Ej: 250.000" className="w-full pl-7 pr-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/></div>
         </div>
         <div>
           <label htmlFor="expenses" className="block text-sm font-medium text-slate-600 mb-1">Precio Primer Mes de Expensas</label>

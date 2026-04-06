@@ -6,6 +6,23 @@ import 'react-datepicker/dist/react-datepicker.css';
 // Registrar locale español
 registerLocale('es', es);
 
+// Helpers de formato numérico argentino (1.250.000,50)
+const formatArgentineNumber = (value) => {
+  const cleaned = value.replace(/[^\d,]/g, '');
+  const commaIndex = cleaned.indexOf(',');
+  if (commaIndex === -1) {
+    return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  const intPart = cleaned.substring(0, commaIndex);
+  const decPart = cleaned.substring(commaIndex + 1).replace(/,/g, '');
+  return `${intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${decPart}`;
+};
+
+const parseArgentineNumber = (value) => {
+  if (!value) return 0;
+  return parseFloat(value.toString().replace(/\./g, '').replace(',', '.')) || 0;
+};
+
 // Índices disponibles del INDEC
 const INDICES_DISPONIBLES = [
   { id: 'IPC', name: 'IPC (Índice de Precios al Consumidor)', serieId: '148.3_INIVELNAL_DICI_M_26' },
@@ -68,7 +85,7 @@ export default function CalculadoraIncrementos() {
       return [];
     }
 
-    const montoInicial = parseFloat(valorInicial);
+    const montoInicial = parseArgentineNumber(valorInicial);
     if (isNaN(montoInicial) || montoInicial <= 0) {
       return [];
     }
@@ -319,10 +336,11 @@ export default function CalculadoraIncrementos() {
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</span>
             <input
               id="valorInicial"
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={valorInicial}
-              onChange={(e) => setValorInicial(e.target.value)}
-              placeholder="Ej: 250000"
+              onChange={(e) => setValorInicial(formatArgentineNumber(e.target.value))}
+              placeholder="Ej: 250.000"
               className="w-full pl-7 pr-4 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
