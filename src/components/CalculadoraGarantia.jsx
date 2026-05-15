@@ -41,6 +41,7 @@ const INTEREST_RATES = {
   three: parseFloat(import.meta.env.VITE_RATE_THREE) || 1.076,
   six: parseFloat(import.meta.env.VITE_RATE_SIX) || 1.135,
   twelve: parseFloat(import.meta.env.VITE_RATE_TWELVE) || 1.255,
+  eighteen: parseFloat(import.meta.env.VITE_RATE_EIGHTEEN) || 1.361,
 };
 
 export default function CalculadoraGarantia() {
@@ -57,7 +58,8 @@ export default function CalculadoraGarantia() {
     const threePaymentsValue = (totalCost * INTEREST_RATES.three) / 3;
     const sixPaymentsValue = (totalCost * INTEREST_RATES.six) / 6;
     const twelvePaymentsValue = (totalCost * INTEREST_RATES.twelve) / 12;
-    return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, sixPaymentsValue, twelvePaymentsValue };
+    const eighteenPaymentsValue = (totalCost * INTEREST_RATES.eighteen) / 18;
+    return { total: totalCost, upfront: upfrontPayment, threePayments: threePaymentsValue, sixPaymentsValue, twelvePaymentsValue, eighteenPaymentsValue };
   }, [duration, rent, expenses]);
 
   return (
@@ -142,6 +144,13 @@ export default function CalculadoraGarantia() {
             description={INTEREST_RATES.twelve === 1
               ? <span className="inline-block bg-green-500 text-white px-2 py-0-5 rounded-full font-semibold tracking-wide">SIN INTERÉS</span>
               : `Con ${(Math.round((INTEREST_RATES.twelve - 1) * 1000) / 10).toLocaleString('es-AR')}% de interés`}
+          />
+          <ResultCard
+            title="18 Pagos de"
+            amount={costs.eighteenPaymentsValue}
+            description={INTEREST_RATES.eighteen === 1
+              ? <span className="inline-block bg-green-500 text-white px-2 py-0.5 rounded-full font-semibold tracking-wide">SIN INTERÉS</span>
+              : `Con ${(Math.round((INTEREST_RATES.eighteen - 1) * 1000) / 10).toLocaleString('es-AR')}% de interés`}
           />
         </div>
       </div>
