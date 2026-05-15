@@ -38,10 +38,10 @@ const parseArgentineNumber = (value) => {
 
 // Configuración de tasas de interés desde variables de entorno
 const INTEREST_RATES = {
-  three: parseFloat(import.meta.env.VITE_RATE_THREE) || 1.076,
-  six: parseFloat(import.meta.env.VITE_RATE_SIX) || 1.135,
-  twelve: parseFloat(import.meta.env.VITE_RATE_TWELVE) || 1.255,
-  eighteen: parseFloat(import.meta.env.VITE_RATE_EIGHTEEN) || 1.361,
+  three: parseFloat(import.meta.env.VITE_RATE_THREE) || 0,
+  six: parseFloat(import.meta.env.VITE_RATE_SIX) || 0,
+  twelve: parseFloat(import.meta.env.VITE_RATE_TWELVE) || 0,
+  eighteen: parseFloat(import.meta.env.VITE_RATE_EIGHTEEN) || 0,
 };
 
 export default function CalculadoraGarantia() {
